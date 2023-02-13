@@ -69,7 +69,7 @@ def main():
         if width_input:
             width = float(width_input)
         prediction = predict(slope, discharge, width)
-        st.write("Predicted Depth [m]: ", round(prediction["depth"], 2))
+        st.metric(label = "Depth ", value = str(round(prediction["depth"], 2))+' m')
 
 if __name__ == "__main__":
     main()
