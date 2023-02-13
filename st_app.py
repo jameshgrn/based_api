@@ -58,9 +58,9 @@ def main():
         width = 150
 
         # Add text boxes to input values
-        slope_input = st.sidebar.text_input("Enter slope:", str(slope))
-        discharge_input = st.sidebar.text_input("Enter discharge:", str(discharge))
-        width_input = st.sidebar.text_input("Enter width:", str(width))
+        slope_input = st.sidebar.text_input("Enter slope [m/m]:", str(slope))
+        discharge_input = st.sidebar.text_input("Enter discharge [m^3/s]:", str(discharge))
+        width_input = st.sidebar.text_input("Enter width [m]:", str(width))
 
         if slope_input:
             slope = float(slope_input)
