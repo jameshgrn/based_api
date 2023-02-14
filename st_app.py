@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
+import shap
+import streamlit.components.v1 as components
+import matplotlib.pyplot as plt
 
 # Load the pre-trained XGBoost model from the .pkl file
 model = xgb.XGBRegressor()
@@ -46,8 +49,19 @@ def predict(slope, discharge, width):
     # Make the prediction using the XGBoost model
     prediction = model.predict(input_data)
 
-    # Return the prediction
+    # Return the prediction and the explanation
     return {"depth": float(prediction[0])}
+
+def st_shap(plot, height=None):
+    shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
+    components.html(shap_html, height=height)
+
+def explain_model_prediction(data):
+    # Calculate Shap values
+    explainer = shap.Explainer(model)
+    shap_values = explainer.shap_values(data)
+    p = shap.force_plot(explainer.expected_value[1], shap_values[1], data)
+    return p, shap_values
 
 def main():
     if check_password():
@@ -69,7 +83,22 @@ def main():
         if width_input:
             width = float(width_input)
         prediction = predict(slope, discharge, width)
+        results = pd.DataFrame({'slope': slope, 'width': width, 'discharge': discharge}, index = [0], dtype = float)
+        p, shap_values = explain_model_prediction(results)
+        st.subheader('Model Prediction Interpretation Plot')
+        st_shap(p)
+
+        st.subheader('Summary Plot 1')
+        fig, ax = plt.subplots(nrows = 1, ncols = 1)
+        shap.summary_plot(shap_values[1], results)
+        st.pyplot(fig)
+
+        st.subheader('Summary Plot 2')
+        fig, ax = plt.subplots(nrows = 1, ncols = 1)
+        shap.summary_plot(shap_values[1], results, plot_type = 'bar')
+        st.pyplot(fig)
         st.metric(label = "Depth ", value = str(round(prediction["depth"], 2))+' m')
+
 
 if __name__ == "__main__":
     main()
