@@ -11,8 +11,9 @@ from data_format import generate_data
 # Set Seaborn style and font scale
 sns.set_style("whitegrid")
 sns.set_context("paper", font_scale=2.2)
+generate_data()
 df = pd.read_csv('data/based_input_data.csv')
-df = df.dropna(subset=['width', 'slope', 'discharge', 'depth'])
+
 
 
 X = df.filter(['width', 'slope', 'discharge'], axis=1)
