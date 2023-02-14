@@ -18,7 +18,9 @@ def generate_data():
     deal_ds['source'] = deal_ds['source'] .astype(str)
     deal_ds['site_id'] = deal_ds['source'] .astype(str)
     based_input_data = pd.concat([deal_ds, dunne_jerolmack], axis=0)
+    based_input_data = based_input_data.dropna(subset = ['width', 'slope', 'discharge', 'depth'])
     based_input_data.to_csv('data/based_input_data.csv')
 
 if __name__ == '__main__':
     generate_data()
+

@@ -41,7 +41,7 @@ def predict(slope, discharge, width):
     Function for making predictions using the XGBoost model.
     """
     # Prepare the input features for prediction
-    input_data = pd.DataFrame({'slope': slope, 'width': width, 'discharge': discharge}, index = [0], dtype=float)
+    input_data = pd.DataFrame({'width': width, 'slope': slope, 'discharge': discharge}, index = [0], dtype=float)
 
     # Make the prediction using the XGBoost model
     prediction = model.predict(input_data)
