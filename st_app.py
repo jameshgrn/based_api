@@ -51,16 +51,19 @@ def predict(slope, discharge, width):
 
 def main():
     if check_password():
-        st.text("up to date error benchmarks: MAE= 0.24 cm, RMSE=0.55, R^2=0.97")
-        #st.image("BASED_validation.png", width=500)
+        st.header("Error Benchmarks")
+        st.markdown("MAE = 0.24 cm, "
+                    "RMSE = 0.55, "
+                    "R^2=0.97")
+        # st.image("BASED_validation.png", width=500)
         slope = .0001
         discharge = 100
         width = 150
 
-        # Add text boxes to input values
-        slope_input = st.sidebar.text_input("Enter slope [m/m]:", str(slope))
-        discharge_input = st.sidebar.text_input("Enter discharge [m^3/s]:", str(discharge))
-        width_input = st.sidebar.text_input("Enter width [m]:", str(width))
+        st.sidebar.title("Input Values")
+        slope_input = st.sidebar.text_input("Slope [m/m]:", str(slope))
+        discharge_input = st.sidebar.text_input("Discharge [m^3/s]:", str(discharge))
+        width_input = st.sidebar.text_input("Width [m]:", str(width))
 
         if slope_input:
             slope = float(slope_input)
@@ -68,6 +71,7 @@ def main():
             discharge = float(discharge_input)
         if width_input:
             width = float(width_input)
+
         prediction = predict(slope, discharge, width)
         st.metric(label = "Depth ", value = str(round(prediction["depth"], 2))+' m')
 
