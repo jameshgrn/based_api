@@ -6,6 +6,7 @@ import xgboost as xgb
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
+from data_format import generate_data
 
 # Set Seaborn style and font scale
 sns.set_style("whitegrid")
