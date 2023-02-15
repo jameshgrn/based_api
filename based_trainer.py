@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import xgboost as xgb
 from sklearn import metrics
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.utils import resample
 from data_format import generate_data
 
@@ -24,12 +24,23 @@ y = df['depth']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42, shuffle=True)
 
 # Train the XGBoost model
-params = {"objective": "reg:squarederror",
-          'max_depth': 12,
-          'subsample': 0.8,
-          'learning_rate': 0.09,
-          'n_estimators': 75,
-          'reg_lambda': 1.2}
+# Set up the parameter grid for the randomized search
+param_dist = {
+    'learning_rate': [0.05, 0.1, 0.15, 0.2],
+    'max_depth': range(3, 10),
+    'n_estimators': range(50, 150, 10),
+    'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
+    'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
+    'reg_alpha': [0, 0.1, 0.5, 1, 10],
+    'reg_lambda': [0, 0.1, 0.5, 1, 10]
+}
+
+# Train and tune the XGBoost model using randomized search with cross-validation
+xg_reg = xgb.XGBRegressor(objective="reg:squarederror")
+random_search = RandomizedSearchCV(estimator=xg_reg, param_distributions=param_dist, n_iter=100, cv=5, scoring='neg_mean_absolute_error', random_state=42, n_jobs=-1)
+random_search.fit(X_train, y_train)
+params = random_search.best_params_
+
 xg_reg = xgb.XGBRegressor(**params)
 xg_reg.fit(X_train, y_train, eval_metric='mae')
 
