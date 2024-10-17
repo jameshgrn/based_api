@@ -4,7 +4,7 @@ import xgboost as xgb
 
 # Load the pre-trained XGBoost model from the .pkl file
 model = xgb.XGBRegressor()
-model.load_model("based.pkl")
+model.load_model("based_us_sans_trampush_early_stopping_combat_overfitting.ubj")
 
 def check_password():
     """Returns `True` if the user had the correct password."""
