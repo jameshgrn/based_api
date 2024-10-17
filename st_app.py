@@ -57,8 +57,8 @@ def main():
                     "R^2=0.97")
         # st.image("BASED_validation.png", width=500)
         slope = .0001
-        discharge = 100
-        width = 150
+        discharge = 400
+        width = 250
 
         st.sidebar.title("Input Values")
         slope_input = st.sidebar.text_input("Slope [m/m]:", str(slope))
