@@ -1,3 +1,6 @@
 pandas
 scikit-learn
 xgboost
+streamlit
+matplotlib
+seaborn
