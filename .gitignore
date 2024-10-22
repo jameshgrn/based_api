@@ -1,3 +1,4 @@
 .history/
 .venv/
 .streamlit/secrets.toml
+.devcontainer/
