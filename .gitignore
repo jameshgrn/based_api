@@ -1,2 +1,3 @@
 .history/
 .venv/
+.streamlit/secrets.toml
