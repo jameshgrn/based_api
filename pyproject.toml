@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "based-api"
-version = "0.2.0"
+version = "1.0.0"
 description = "based-api is a package that serves predictions from the Boost-Assissted Stream Estimator for Depth (BASED).BASED is an XGBoost regressor deployed using Streamlit. This package is designed for making channel depth predictions using channel width, slope, and discharge."
 authors = ["Jake Gearon <jake.gearon@gmail.com>"]
 readme = "README.md"
