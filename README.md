@@ -62,20 +62,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 Jake Gearon - jake.gearon@gmail.com
 
-Project Link: [https://github.com/JakeGearon/based-api](https://github.com/JakeGearon/based-api)
+Project Link: [https://based-estimator.streamlit.app/](https://based-estimator.streamlit.app/)
 
-## Setup
-
-### Secrets Management
-
-For local development:
-
-1. Copy the secrets template:
-   ```
-   cp .streamlit/secrets.toml.template .streamlit/secrets.toml
-   ```
-2. Edit `.streamlit/secrets.toml` and replace the placeholder values with your actual secrets.
-
-Note: Never commit `.streamlit/secrets.toml` to version control.
-
-For production deployment, set up secrets according to your hosting platform's recommendations (e.g., Streamlit Cloud, Heroku, etc.).
