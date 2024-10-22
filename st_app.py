@@ -6,6 +6,13 @@ import xgboost as xgb
 model = xgb.XGBRegressor()
 model.load_model("based_us_sans_trampush_early_stopping_combat_overfitting.ubj")
 
+st.set_page_config(
+   page_title="BASED",
+   page_icon="🌊",
+   layout="wide",
+   initial_sidebar_state="expanded",
+)
+
 def predict(slope, discharge, width):
     """
     Function for making predictions using the XGBoost model.
@@ -62,16 +69,9 @@ def main():
     st.markdown("---")
     st.subheader("⚠️ Disclaimer")
     st.markdown("""
-    The Boost-Assisted Stream Estimator for Depth (BASED) is provided for informational and research purposes only. 
-    While we strive for accuracy, the predictions made by this model should not be used as the sole basis for any 
-    critical decisions related to water resource management, engineering projects, or activities that may impact 
-    public safety.
-
-    The creators and maintainers of BASED are not responsible for any consequences resulting from the use or misuse 
-    of this tool. Users should always consult with qualified professionals and conduct proper field measurements 
-    before making any decisions based on these predictions.
-
-    By using this tool, you acknowledge that you understand and accept these limitations and risks.
+    BASED is provided for informational and research purposes only. Do not use these predictions as the sole basis for critical decisions. 
+    Always consult qualified professionals and conduct proper field measurements. The creators are not responsible for consequences arising 
+    from the use or misuse of this tool.
     """)
 
 if __name__ == "__main__":
