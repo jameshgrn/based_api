@@ -45,7 +45,7 @@ def main():
     st.subheader("📊 Model Performance")
     st.markdown("- **MAE:** 0.24 cm\n- **RMSE:** 0.55\n- **R²:** 0.97")
     st.image("img/BASED_validation.png", caption="BASED Validation Results", use_column_width=True)
-    st.caption("Image source: Gearon, J.H., Martin, H.K., DeLisle, C. et al. Rules of river avulsion change downstream. Nature 634, 91–95 (2024). https://doi.org/10.1038/s41586-024-07964-2")
+    st.caption("Image source: Gearon, J.H. et al. Rules of river avulsion change downstream. Nature 634, 91–95 (2024). https://doi.org/10.1038/s41586-024-07964-2")
     
     st.subheader("ℹ️ Model Information")
     st.markdown("""
