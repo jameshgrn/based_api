@@ -43,7 +43,7 @@ def main():
             st.error("Please enter valid numeric values for all inputs.")
 
     st.subheader("📊 Model Performance")
-    st.markdown("- **MAE:** 0.24 cm\n- **RMSE:** 0.55\n- **R²:** 0.97")
+    st.markdown("- **MAE:** 33 cm\n- **RMSE:** 102 cm\n- **R²:** 0.89\n- **MAPE:** 20%")
     st.image("img/BASED_validation.png", caption="BASED Validation Results", use_column_width=True)
     st.caption("Image source: Gearon, J.H. et al. Rules of river avulsion change downstream. Nature 634, 91–95 (2024). https://doi.org/10.1038/s41586-024-07964-2")
     
@@ -57,6 +57,21 @@ def main():
     ```
     
     **Description:** BASED is an XGBoost regressor designed for predicting channel depth using channel width, slope, and discharge.
+    """)
+
+    st.markdown("---")
+    st.subheader("⚠️ Disclaimer")
+    st.markdown("""
+    The Boost-Assisted Stream Estimator for Depth (BASED) is provided for informational and research purposes only. 
+    While we strive for accuracy, the predictions made by this model should not be used as the sole basis for any 
+    critical decisions related to water resource management, engineering projects, or activities that may impact 
+    public safety.
+
+    The creators and maintainers of BASED are not responsible for any consequences resulting from the use or misuse 
+    of this tool. Users should always consult with qualified professionals and conduct proper field measurements 
+    before making any decisions based on these predictions.
+
+    By using this tool, you acknowledge that you understand and accept these limitations and risks.
     """)
 
 if __name__ == "__main__":
