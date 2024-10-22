@@ -22,7 +22,6 @@ BASED is an XGBoost regressor deployed using Streamlit, designed for predicting 
 
 2. Install dependencies:
    ```
-   pip install poetry
    poetry install
    ```
 
@@ -41,9 +40,11 @@ BASED is an XGBoost regressor deployed using Streamlit, designed for predicting 
 
 ![BASED Validation](img/BASED_validation.png)
 
+*Image source: Gearon, J.H. et al. Rules of river avulsion change downstream. Nature 634, 91–95 (2024). https://doi.org/10.1038/s41586-024-07964-2*
+
 ## Citation
 
-If you use BASED in your research, please cite it as follows:
+If you use BASED in your research, please either cite the paper it came from (above) or the software itself as follows:
 
 ```
 Gearon, J. (2024). Boost-Assisted Stream Estimator for Depth (BASED) [Computer software]. Version 1.0.0. https://github.com/JakeGearon/based-api
