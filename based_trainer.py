@@ -7,6 +7,7 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
 from data_format import generate_data
+from joblib import dump
 
 # Set Seaborn style and font scale
 sns.set_style("whitegrid")
@@ -70,6 +71,10 @@ plt.axis('equal')
 plt.legend()
 plt.tight_layout()
 plt.savefig("img/BASED_validation.png", dpi=250)
-xg_reg.save_model("based.pkl")
+
+# Train the final model on all data
+xg_reg.fit(X, y)
+# Save the model
+dump(xg_reg, 'based_model.joblib')
 
 

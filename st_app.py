@@ -1,21 +1,11 @@
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
-import pickle
 
-# Initialize XGBoost model with parameters
-model = xgb.XGBRegressor(
-    objective="reg:squarederror",
-    max_depth=12,
-    subsample=0.8,
-    learning_rate=0.09,
-    n_estimators=75,
-    reg_lambda=1.2
-)
-
-# Load the pre-trained model using pickle instead of .ubj
-with open('based.pkl', 'rb') as f:
-    model = pickle.load(f)
+# Load the pre-trained XGBoost model
+model = xgb.Booster()
+model = xgb.XGBRegressor()
+model.load_model("based_us_sans_trampush_early_stopping_combat_overfitting.ubj")
 
 st.set_page_config(
    page_title="BASED",
