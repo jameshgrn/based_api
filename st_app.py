@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
+import pickle
 
-# Initialize XGBoost model with the same parameters used during training
+# Initialize XGBoost model with parameters
 model = xgb.XGBRegressor(
     objective="reg:squarederror",
     max_depth=12,
@@ -12,8 +13,9 @@ model = xgb.XGBRegressor(
     reg_lambda=1.2
 )
 
-# Load the pre-trained model
-model.load_model("based_us_sans_trampush_early_stopping_combat_overfitting.ubj")
+# Load the pre-trained model using pickle instead of .ubj
+with open('based.pkl', 'rb') as f:
+    model = pickle.load(f)
 
 st.set_page_config(
    page_title="BASED",
@@ -60,7 +62,7 @@ def main():
 
     st.subheader("📊 Model Performance")
     st.markdown("- **MAE:** 33 cm\n- **RMSE:** 102 cm\n- **R²:** 0.89\n- **MAPE:** 20%")
-    st.image("img/BASED_validation.png", caption="BASED Validation Results", use_column_width=True)
+    st.image("img/BASED_validation.png", caption="BASED Validation Results", use_container_width=True)
     st.caption("Image source: Gearon, J.H. et al. Rules of river avulsion change downstream. Nature 634, 91–95 (2024). https://doi.org/10.1038/s41586-024-07964-2")
     
     st.subheader("ℹ️ Model Information")
