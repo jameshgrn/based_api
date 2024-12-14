@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import xgboost as xgb
 import os
+import matplotlib.pyplot as plt
+from matplotlib.patches import Polygon
+import matplotlib.patches as patches
+import numpy as np
 
 # Must be the first Streamlit command
 st.set_page_config(
@@ -9,6 +13,11 @@ st.set_page_config(
    page_icon="🌊",
    layout="wide",
    initial_sidebar_state="expanded",
+   menu_items={
+       'Get Help': 'https://github.com/jameshgrn/based_api/issues',
+       'Report a bug': 'https://github.com/jameshgrn/based_api/issues/new',
+       'About': "BASED: The Boost-Assisted Stream Estimator for Depth."
+   }
 )
 
 try:
@@ -39,7 +48,31 @@ def predict(slope, discharge, width):
     return {"depth": float(prediction[0])}
 
 def main():
-    st.title("🌊 Boost-Assisted Stream Estimator for Depth (BASED)")
+    st.title("🌊 BASED: River Depth Predictor")
+    st.markdown("""
+        <style>
+            .reportview-container {
+                background: linear-gradient(to right, #f0f2f6, #ffffff)
+            }
+            .sidebar .sidebar-content {
+                background: linear-gradient(to bottom, #f0f2f6, #ffffff)
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns([2,1])
+    with col1:
+        st.markdown("""
+        **Welcome to BASED** - The Boost-Assisted Stream Estimator for Depth
+        
+        Enter your river parameters in the sidebar to get instant depth predictions.
+        This model is trained on thousands of river measurements and published in Nature.
+        """)
+    with col2:
+        st.markdown("""
+        [![GitHub](https://img.shields.io/github/stars/jameshgrn/based_api?style=social)](https://github.com/jameshgrn/based_api)
+        [![Paper](https://img.shields.io/badge/Read-Paper-blue)](https://www.nature.com/articles/s41586-024-07964-2)
+        """)
 
     st.sidebar.title("Input Values")
     
@@ -102,10 +135,94 @@ def main():
             prediction = predict(slope, discharge, width)
             depth = prediction["depth"]
 
-            # Add confidence information
-            st.metric("Predicted Depth", f"{depth:.2f} m")
-            st.metric("Width/Depth Ratio", f"{width/depth:.2f}")
-            
+            # Clear any existing plots
+            plt.close('all')
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Predicted Depth", f"{depth:.2f} m")
+                st.metric("Width/Depth Ratio", f"{width/depth:.2f}")
+            with col2:
+                # Create a simple cartoon cross-section
+                fig, ax = plt.subplots(figsize=(12, 6))
+                fig.patch.set_facecolor('#0E1117')
+                ax.set_facecolor('#0E1117')
+                
+                # Calculate vertical exaggeration
+                ve = 20  # Fixed vertical exaggeration for consistency
+                
+                # Set view limits relative to river dimensions
+                margin = max(width * 0.2, 10)  # minimum 10m margin
+                ax.set_xlim(-margin, width + margin)
+                ax.set_ylim(-depth * ve * 1.2, depth * ve * 0.4)
+                
+                # Force aspect ratio
+                ax.set_aspect(1/ve)
+                
+                # Simple rectangular channel with rounded corners
+                rect = patches.Rectangle((-margin, -depth * ve), 
+                                      width + 2*margin, 
+                                      depth * ve * 1.4,
+                                      facecolor='#654321',  # Brown color for ground
+                                      alpha=0.7)
+                ax.add_patch(rect)
+                
+                # Water body (simple rectangle with slight transparency)
+                water = patches.Rectangle((0, -depth * ve),
+                                       width,
+                                       depth * ve,
+                                       facecolor='#4BA3F9',  # Light blue
+                                       alpha=0.8)
+                ax.add_patch(water)
+                
+                # Simple wave pattern on top
+                x = np.linspace(0, width, 100)
+                wave_height = depth * ve * 0.02
+                wave = wave_height * np.sin(x * np.pi * 8 / width)
+                ax.plot(x, wave, color='white', alpha=0.8, linewidth=2)
+                
+                # Add measurement arrows with correct style
+                arrow_props = dict(arrowstyle='<->', color='white', linewidth=2,
+                                 mutation_scale=15)  # mutation_scale controls the arrow size
+                
+                # Width arrow
+                width_y = -depth * ve * 0.8
+                ax.annotate('', xy=(0, width_y), xytext=(width, width_y),
+                           arrowprops=arrow_props)
+                ax.text(width/2, width_y * 1.1, f'Width: {width:.1f} m',
+                       color='white', ha='center', va='bottom',
+                       bbox=dict(facecolor='#0E1117', edgecolor='none', alpha=0.7),
+                       fontsize=12)
+                
+                # Depth arrow
+                depth_x = width * 0.85
+                ax.annotate('', xy=(depth_x, 0), xytext=(depth_x, -depth * ve),
+                           arrowprops=arrow_props)
+                ax.text(depth_x * 1.05, -depth * ve/2, f'Depth:\n{depth:.1f} m',
+                       color='white', ha='left', va='center',
+                       bbox=dict(facecolor='#0E1117', edgecolor='none', alpha=0.7),
+                       fontsize=12)
+                
+                # Add VE annotation
+                ax.text(0.02, 0.98, f'VE: {ve}×',
+                       transform=ax.transAxes,
+                       color='white', ha='left', va='top',
+                       bbox=dict(facecolor='#0E1117', edgecolor='none', alpha=0.7),
+                       fontsize=10)
+                
+                # Style improvements
+                ax.grid(False)
+                ax.set_xlabel('Width (m)', color='#FAFAFA', fontsize=11)
+                ax.set_ylabel('Elevation (m)', color='#FAFAFA', fontsize=11)
+                ax.tick_params(colors='#FAFAFA', labelsize=10)
+                
+                # Remove spines
+                for spine in ax.spines.values():
+                    spine.set_visible(False)
+                
+                # Adjust layout
+                plt.tight_layout()
+                st.pyplot(fig)
 
         except ValueError:
             st.error("Please enter valid numeric values for all inputs.")
