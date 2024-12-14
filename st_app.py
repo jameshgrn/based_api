@@ -1,18 +1,23 @@
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
+import os
 
-# Load the pre-trained XGBoost model
-model = xgb.Booster()
-model = xgb.XGBRegressor()
-model.load_model("based_us_sans_trampush_early_stopping_combat_overfitting.ubj")
-
+# Must be the first Streamlit command
 st.set_page_config(
    page_title="BASED",
    page_icon="🌊",
    layout="wide",
    initial_sidebar_state="expanded",
 )
+
+try:
+    # Then load the model
+    model = xgb.XGBRegressor()
+    model.load_model("based_us_sans_trampush_early_stopping_combat_overfitting.ubj")
+except Exception as e:
+    st.error(f"Error loading model: {str(e)}")
+    st.stop()
 
 def predict(slope, discharge, width):
     """
