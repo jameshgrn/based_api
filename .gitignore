@@ -2,3 +2,4 @@
 .venv/
 .streamlit/secrets.toml
 .devcontainer/
+.whisper/
