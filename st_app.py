@@ -106,9 +106,6 @@ def main():
             st.metric("Predicted Depth", f"{depth:.2f} m")
             st.metric("Width/Depth Ratio", f"{width/depth:.2f}")
             
-            # Add warning for extreme predictions
-            if depth > 20 or depth < 0.1:
-                st.warning("⚠️ Prediction is outside typical range. Use with caution.")
 
         except ValueError:
             st.error("Please enter valid numeric values for all inputs.")
