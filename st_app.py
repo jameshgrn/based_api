@@ -2,8 +2,17 @@ import streamlit as st
 import pandas as pd
 import xgboost as xgb
 
-# Load the pre-trained XGBoost model
-model = xgb.XGBRegressor()
+# Initialize XGBoost model with the same parameters used during training
+model = xgb.XGBRegressor(
+    objective="reg:squarederror",
+    max_depth=12,
+    subsample=0.8,
+    learning_rate=0.09,
+    n_estimators=75,
+    reg_lambda=1.2
+)
+
+# Load the pre-trained model
 model.load_model("based_us_sans_trampush_early_stopping_combat_overfitting.ubj")
 
 st.set_page_config(
