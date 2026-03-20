@@ -1,26 +1,73 @@
 import pandas as pd
+import numpy as np
+
+
+def load_dunne_jerolmack():
+    df = pd.read_excel("data/GlobalDatasets.xlsx")
+    df = pd.DataFrame({
+        'original_source': df['Citation'],
+        'site_id': df['Site'],
+        'slope': df['Slope'].abs(),
+        'width': df['Width (m)'],
+        'depth': df['Depth (m)'],
+        'discharge': df['Discharge (m3/s)'],
+        'source': 'Dunne_Jerolmack',
+    })
+    # Physical plausibility + remove known overlaps with Deal dataset
+    df = df[
+        (df['width'] > 0) &
+        (df['width'] <= 4000) &
+        (df['slope'] >= 1e-5) &
+        ~df['original_source'].str.contains('Singer|Li et. al', case=False, na=False)
+    ].copy()
+    return df
+
+
+def load_deal():
+    df = pd.read_csv("data/HG_data_comp_complete.csv")
+    df = df.query("river_class != -1.0").copy()
+    df['original_source'] = df['source']
+    df['source'] = 'Deal'
+    df = df[
+        (df['width'] > 0) &
+        (df['width'] <= 10000) &
+        (df['slope'] > 0) &
+        (df['depth'] <= 150)
+    ]
+    drop_cols = [
+        'notes', 'area', 'sed_discharge', 'd90', 'bedload_discharge',
+        'erosion_rate', 'velocity', 'd50', 'd84', 'Unnamed: 0',
+        'DOI', 'primary_source', 'river_class',
+    ]
+    return df.drop(columns=drop_cols)
+
 
 def generate_data():
-    dunne_jerolmack_path = r"data/GlobalDatasets.xlsx"
-    dunne_jerolmack = pd.read_excel(dunne_jerolmack_path)
-    dunne_jerolmack = dunne_jerolmack.drop(['tau_*bf', 'D50 (m)'], axis=1)
-    dunne_jerolmack['bankfull'] = True
-    dunne_jerolmack.columns = ['source', 'site_id', 'slope', 'width', 'depth', 'discharge', 'bankfull']
-    dunne_jerolmack['source'] = dunne_jerolmack['source'] .astype(str)
-    dunne_jerolmack['site_id'] = dunne_jerolmack['source'] .astype(str)
-    dunne_jerolmack['slope'] = dunne_jerolmack['slope'].abs()
-    deal_ds_path = "data/HG_data_comp_complete.csv"
-    deal_ds = pd.read_csv(deal_ds_path)
-    deal_ds = deal_ds.query("river_class != -1.0")
-    deal_ds = deal_ds.drop(['notes', 'area', 'sed_discharge', 'd90',
-                            'bedload_discharge', 'erosion_rate', 'velocity',
-                            'd50', 'd84', 'Unnamed: 0', 'DOI', 'primary_source', 'river_class'], axis=1)
-    deal_ds['source'] = deal_ds['source'] .astype(str)
-    deal_ds['site_id'] = deal_ds['source'] .astype(str)
-    based_input_data = pd.concat([deal_ds, dunne_jerolmack], axis=0)
-    based_input_data = based_input_data.dropna(subset = ['width', 'slope', 'discharge', 'depth'])
-    based_input_data.to_csv('data/based_input_data.csv')
+    deal = load_deal()
+    dj = load_dunne_jerolmack()
+
+    keep = ['discharge', 'width', 'depth', 'slope', 'site_id', 'source']
+    data = pd.concat([deal[keep], dj[keep]], axis=0)
+
+    numeric = ['discharge', 'width', 'depth', 'slope']
+    data[numeric] = data[numeric].apply(pd.to_numeric, errors='coerce')
+
+    valid = (
+        data[numeric].notna().all(axis=1) &
+        (data[numeric] > 0).all(axis=1) &
+        (data['slope'] >= 1e-5) &
+        (data['width'] <= 4000) &
+        (data['width'] / data['depth'] >= 3) &
+        (data['width'] / data['depth'] <= 7000)
+    )
+    data = data[valid].copy()
+
+    print(f"Total records: {len(data)}")
+    print(data['source'].value_counts().to_string())
+
+    data.to_csv('data/based_input_data_clean.csv', index=False)
+    return data
+
 
 if __name__ == '__main__':
     generate_data()
-
