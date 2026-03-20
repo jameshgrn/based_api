@@ -34,9 +34,10 @@ BASED is an XGBoost regressor deployed using Streamlit, designed for predicting 
 
 ## Model Performance
 
-- Mean Absolute Error (MAE): 0.24 cm
-- Root Mean Square Error (RMSE): 0.55
-- R-squared (R²): 0.97
+- Mean Absolute Error (MAE): 28 cm
+- Root Mean Square Error (RMSE): 94 cm
+- R-squared (R²): 0.84
+- Mean Absolute Percentage Error (MAPE): 15.6%
 
 ![BASED Validation](img/BASED_validation.png)
 
