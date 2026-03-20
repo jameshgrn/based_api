@@ -158,6 +158,13 @@ def generate_data_v2(
     # stack — no site_id overlap possible (literature vs USGS gauges)
     combined = pd.concat([existing, bankfull[keep]], axis=0, ignore_index=True)
 
+    # true duplicate rows only: all numeric values identical across all four hydraulic columns
+    before = len(combined)
+    combined = combined.drop_duplicates(subset=["discharge", "width", "depth", "slope"])
+    dropped = before - len(combined)
+    if dropped:
+        print(f"  Dropped {dropped} exact duplicate rows")
+
     print(f"\nCombined dataset: {len(combined):,} rows")
     print(combined["source"].value_counts().to_string())
 
