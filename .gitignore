@@ -3,3 +3,6 @@
 .streamlit/secrets.toml
 .devcontainer/
 .whisper/
+data/
+__pycache__/
+.DS_Store

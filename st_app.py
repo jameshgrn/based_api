@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import xgboost as xgb
 import os
 
@@ -12,31 +13,21 @@ st.set_page_config(
 )
 
 try:
-    # Load model directly with XGBoost
     model = xgb.Booster()
-    model.load_model("based_us_sans_trampush_early_stopping_combat_overfitting.ubj")
+    model.load_model("based_model.ubj")
 except Exception as e:
     st.error(f"Error loading model: {str(e)}")
     st.stop()
 
 def predict(slope, discharge, width):
-    """
-    Function for making predictions using the XGBoost model.
-    """
-    # Prepare the input features for prediction
     input_data = pd.DataFrame({
-        'width': [width], 
-        'slope': [slope], 
-        'discharge': [discharge]
+        'log_Q': [np.log10(discharge)],
+        'log_w': [np.log10(width)],
+        'log_S': [np.log10(slope)],
     }, dtype=float)
-    
-    # Convert to DMatrix for prediction
     dmat = xgb.DMatrix(input_data)
-    
-    # Make prediction
-    prediction = model.predict(dmat)
-    
-    return {"depth": float(prediction[0])}
+    log_pred = model.predict(dmat)
+    return {"depth": float(10 ** log_pred[0])}
 
 def main():
     st.title("🌊 Boost-Assisted Stream Estimator for Depth (BASED)")
@@ -111,7 +102,7 @@ def main():
             st.error("Please enter valid numeric values for all inputs.")
 
     st.subheader("📊 Model Performance")
-    st.markdown("- **MAE:** 33 cm\n- **RMSE:** 102 cm\n- **R²:** 0.89\n- **MAPE:** 20%")
+    st.markdown("- **MAE:** 28 cm\n- **RMSE:** 94 cm\n- **R²:** 0.84\n- **MAPE:** 15.6%")
     st.image("img/BASED_validation.png", caption="BASED Validation Results", use_container_width=True)
     st.caption("Image source: Gearon, J.H. et al. Rules of river avulsion change downstream. Nature 634, 91–95 (2024). https://doi.org/10.1038/s41586-024-07964-2")
     
