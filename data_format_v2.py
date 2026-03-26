@@ -2,6 +2,7 @@
 BASED v2 training data pipeline.
 
 Extracts bankfull hydraulic geometry from IFMHA (USGS wading measurements)
+using LP3-derived Qbf (2-year return period from USGS annual peak flows)
 and merges with existing clean dataset without overlap.
 
 IFMHA units (imperial) → converted to SI:
@@ -20,10 +21,8 @@ CFS_TO_M3S = 0.0283168
 FT_TO_M = 0.3048
 FT2_TO_M2 = 0.3048 ** 2
 
-QBF_PERCENTILE = 0.95   # proxy for bankfull recurrence
-QBF_WINDOW = 0.20       # ±20% of Qbf for geometry extraction
-MIN_MEAS_FOR_QBF = 20   # minimum Q measurements to estimate Qbf
-MIN_BANKFULL_MEAS = 3   # minimum near-bankfull measurements for geometry
+QBF_WINDOW = 0.10       # ±10% of Qbf for geometry extraction
+MIN_BANKFULL_MEAS = 5   # minimum near-bankfull measurements for geometry
 
 
 # ── loaders ──────────────────────────────────────────────────────────────────
@@ -56,30 +55,28 @@ def load_ifmha(path: str) -> pd.DataFrame:
     return df
 
 
-def extract_bankfull(df: pd.DataFrame) -> pd.DataFrame:
+def extract_bankfull(df: pd.DataFrame, qbf_lookup: pd.DataFrame) -> pd.DataFrame:
     """
     Per station:
-      1. Estimate Qbf from all Q measurements at QBF_PERCENTILE.
-      2. Select measurements within QBF_WINDOW of Qbf that have geometry.
+      1. Look up LP3-derived Qbf (2-yr return period from USGS peak flows).
+      2. Select IFMHA measurements within QBF_WINDOW of Qbf that have geometry.
       3. Take median W, H; use Qbf; keep median slope.
     """
-    results = []
+    # normalise site_no to zero-padded string for join
+    qbf_map = qbf_lookup.set_index("site_no")["qbf_m3s"].to_dict()
 
+    results = []
     for site_no, grp in df.groupby("site_no"):
-        # need enough measurements to estimate Qbf reliably
-        if len(grp) < MIN_MEAS_FOR_QBF:
+        site_str = str(int(site_no)).zfill(8)
+
+        qbf = qbf_map.get(site_str)
+        if qbf is None or qbf <= 0:
             continue
 
-        # slope must exist (constant per COMID/station)
         slope = grp["slope"].dropna()
         if slope.empty or slope.median() < 1e-5:
             continue
 
-        qbf = grp["Q_m3s"].quantile(QBF_PERCENTILE)
-        if qbf <= 0:
-            continue
-
-        # near-bankfull rows with geometry
         lo, hi = qbf * (1 - QBF_WINDOW), qbf * (1 + QBF_WINDOW)
         near_bf = grp[
             (grp["Q_m3s"] >= lo) &
@@ -99,7 +96,7 @@ def extract_bankfull(df: pd.DataFrame) -> pd.DataFrame:
             continue
 
         results.append({
-            "site_id": str(site_no),
+            "site_id": site_str,
             "source": "IFMHA",
             "discharge": qbf,
             "width": wbf,
@@ -133,16 +130,26 @@ def apply_physical_filters(df: pd.DataFrame) -> pd.DataFrame:
 
 def generate_data_v2(
     ifmha_path: str = "data/IFMHA_dataset.csv",
+    qbf_path: str = "data/qbf_lp3.parquet",
     existing_path: str = "data/based_input_data_clean.csv",
     output_path: str = "data/based_input_data_v2.csv",
 ) -> pd.DataFrame:
+    from fetch_peak_flows import main as fetch_qbf
 
     print("Loading IFMHA...")
     ifmha_raw = load_ifmha(ifmha_path)
     print(f"  {len(ifmha_raw):,} rows with Q>0 across {ifmha_raw['site_no'].nunique():,} stations")
 
+    # fetch/load LP3 Qbf estimates
+    try:
+        qbf_lookup = pd.read_parquet(qbf_path)
+        print(f"  Loaded LP3 Qbf for {len(qbf_lookup):,} stations from cache")
+    except FileNotFoundError:
+        print("  No Qbf cache found — fetching USGS peak flows...")
+        qbf_lookup = fetch_qbf(ifmha_path=ifmha_path, qbf_out=qbf_path)
+
     print("Extracting bankfull geometry...")
-    bankfull = extract_bankfull(ifmha_raw)
+    bankfull = extract_bankfull(ifmha_raw, qbf_lookup)
     print(f"  {len(bankfull):,} stations with bankfull geometry before filtering")
 
     print("Applying physical filters...")
