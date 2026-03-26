@@ -54,13 +54,13 @@ def main():
         "Slope [m/m]:", "0.0001",
         help=slope_help
     )
-    discharge = st.sidebar.text_input(
-        "Discharge [m³/s]:", "400",
-        help=discharge_help
-    )
     width = st.sidebar.text_input(
         "Width [m]:", "250",
         help=width_help
+    )
+    discharge = st.sidebar.text_input(
+        "Discharge [m³/s]:", "400",
+        help=discharge_help
     )
 
     with st.sidebar.expander("ℹ️ About Input Ranges"):
