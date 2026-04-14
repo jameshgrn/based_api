@@ -9,6 +9,6 @@ watchdog>=6.0.0
 optuna>=4.0.0
 openpyxl>=3.1.0
 tornado>=6.5.5
-Pillow>=12.1.1
+Pillow>=12.2.0
 fastapi>=0.115.0
 uvicorn>=0.30.0

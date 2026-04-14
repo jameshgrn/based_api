@@ -18,8 +18,9 @@ dependencies = [
     "optuna>=4.0.0",
     "openpyxl>=3.1.0",
     "tornado>=6.5.5",
-    "Pillow>=12.1.1",
-    "requests>=2.33.0",
+    "Pillow>=12.2.0",
+    "requests>=2.31.0",
+    "pyproj>=3.6.0",
 ]
 
 [project.scripts]
