@@ -29,12 +29,13 @@ Thumbs.db
 .env.*
 .streamlit/secrets.toml
 
-# Model weights (use releases or LFS for distribution)
-*.ubj
+# Retired model weights (active model is tracked)
+based_model.ubj
+based_us_sans_trampush_early_stopping_combat_overfitting.ubj
+based_model_v3.ubj
 *.pkl
 *.h5
 *.pt
-*.bin
 *.onnx
 
 # Data & cache
