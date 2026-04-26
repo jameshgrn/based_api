@@ -1,10 +1,52 @@
-.history/
-.venv/
-.streamlit/secrets.toml
-.devcontainer/
-.whisper/
-data/
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDE / editor
+.history/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
-HANDOVER.md
+Thumbs.db
+
+# Secrets & credentials
+.env
+.env.*
+.streamlit/secrets.toml
+
+# Model weights (use releases or LFS for distribution)
+*.ubj
+*.pkl
+*.h5
+*.pt
+*.bin
+*.onnx
+
+# Data & cache
+data/
+cache/
+
+# Whisper / audio
+.whisper/
+
+# Lock files (poetry removed, uv.lock is committed)
 poetry.lock
+
+# Misc
+HANDOVER.md
+*.log

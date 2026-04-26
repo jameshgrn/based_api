@@ -1,9 +1,23 @@
 """BASED v2 REST API — predict bankfull channel depth from Q, W, S."""
 
+import os
+
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Security
+from fastapi.security import APIKeyHeader
+
+_API_KEY = os.environ.get("BASED_API_KEY")
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+async def _check_api_key(key: str | None = Security(_api_key_header)):
+    if _API_KEY is None:
+        return  # no key configured — open access
+    if key != _API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid or missing API key")
+
 
 app = FastAPI(
     title="BASED — Boost-Assisted Stream Estimator for Depth",
@@ -12,6 +26,7 @@ app = FastAPI(
         "Predicts bankfull channel depth from discharge, width, and slope "
         "using an XGBoost model trained on 4,315 field-surveyed observations."
     ),
+    dependencies=[Depends(_check_api_key)],
 )
 
 model = xgb.Booster()
@@ -48,9 +63,17 @@ def predict(
     }
 
 
+MAX_BATCH_SIZE = 500
+
+
 @app.post("/predict/batch")
 def predict_batch(rows: list[dict]):
     """Predict depth for multiple rows. Each dict needs discharge, width, slope."""
+    if len(rows) > MAX_BATCH_SIZE:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Batch size {len(rows)} exceeds maximum of {MAX_BATCH_SIZE}",
+        )
     results = []
     for i, row in enumerate(rows):
         try:
