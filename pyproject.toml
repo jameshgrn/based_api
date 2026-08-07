@@ -30,7 +30,7 @@ based-api = "uvicorn:main"
 dev = [
     "scipy>=1.11.0",
     "requests>=2.33.0",
-    "pynhd>=0.18.0",
+    "pynhd>=0.20.0",
 ]
 
 [tool.uv]
