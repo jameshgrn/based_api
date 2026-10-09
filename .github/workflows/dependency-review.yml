@@ -14,11 +14,3 @@ jobs:
         uses: actions/checkout@v4
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
-        with:
-          # GitPython 3.1.58 fixes these but was published 2026-08-04, inside
-          # the 7-day install quarantine (uv exclude-newer). GitPython here is
-          # a transitive dep of Streamlit's own git/deploy tooling, not called
-          # by based_api code with attacker-controlled input. Remove this
-          # allow-list and bump the gitpython constraint in pyproject.toml
-          # once quarantine clears on 2026-08-11.
-          allow-ghsas: GHSA-4gmw-gg2m-w46p, GHSA-9rj7-rf2p-w77r, GHSA-hmq2-w58f-27jc, GHSA-jm78-9fvv-mhgr, GHSA-wvpp-8hx9-p66j, GHSA-hh9p-6wh2-4mfc
