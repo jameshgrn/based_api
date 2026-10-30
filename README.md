@@ -7,27 +7,27 @@ BASED is an XGBoost regressor deployed using Streamlit, designed for predicting 
 
 ## Features
 
-- 🌊 Accurate channel depth predictions
-- 🚀 Fast inference using XGBoost
-- 🖥️ User-friendly Streamlit interface
-- 📊 Built-in error benchmarks and validation
+- Predicts river channel depth from width, slope, and discharge
+- Gradient-boosted trees (XGBoost)
+- Streamlit app for interactive predictions
+- Validation metrics and plot below
 
 ## Quick Start
 
 1. Clone the repository:
    ```
-   git clone https://github.com/JakeGearon/based-api.git
-   cd based-api
+   git clone https://github.com/jameshgrn/based_api.git
+   cd based_api
    ```
 
 2. Install dependencies:
    ```
-   poetry install
+   uv sync
    ```
 
 3. Run the Streamlit app:
    ```
-   poetry run streamlit run st_app.py
+   uv run streamlit run st_app.py
    ```
 
 4. Input values for slope, discharge, and width to predict channel depth.
@@ -48,7 +48,7 @@ BASED is an XGBoost regressor deployed using Streamlit, designed for predicting 
 If you use BASED in your research, please either cite the paper it came from (above) or the software itself as follows:
 
 ```
-Gearon, J. (2024). Boost-Assisted Stream Estimator for Depth (BASED) [Computer software]. Version 1.0.0. https://github.com/JakeGearon/based-api
+Gearon, J. (2024). Boost-Assisted Stream Estimator for Depth (BASED) [Computer software]. Version 1.0.0. https://github.com/jameshgrn/based_api
 ```
 
 ## License
